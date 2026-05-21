@@ -4,6 +4,11 @@
 **Status:** Review  
 **Date:** 05/21/2026 (Thur)
 
+<img width="1290" height="856" alt="Screenshot 2026-05-21 at 5 25 38 PM" src="https://github.com/user-attachments/assets/48109c5f-3551-410d-806c-f5f63ca55475" />
+
+<img width="1322" height="798" alt="Screenshot 2026-05-21 at 5 26 18 PM" src="https://github.com/user-attachments/assets/29821eb1-dbd2-40b0-be43-6f98c27f4b1d" />
+
+
 ## Introduction
 
 ### Problem statement
