@@ -215,7 +215,7 @@ The `GET /card_activity` response is a read model over these existing tables:
 
 - Activity feed combines authorizations and transactions into a single display list.
 - Posted transactions can link back to the originating authorization for dedupe/display.
-- Pending items come only from open authorizations. Posted items come from transactions, so the feed unions pending authorizations with posted transactions and avoids double-counting once an authorization has a transaction entry.
+- Pending and declined items come from authorization records. Posted items come from transactions, so the feed unions authorizations with posted transactions and avoids double-counting once an authorization has a transaction entry.
 - User and card metadata, such as user name, email, and card last4, are joined from existing `users` and `cards` rows when needed.
 - MTD summary metrics are computed from the same authorization/transaction data.
 
@@ -265,16 +265,16 @@ Re-uses the **existing system availability strategy** (deployment topology, DR, 
 
 Single endpoint for the landing page: activity feed + **MTD summary** (insights).
 
-Summary spend excludes declined authorizations and uses posted transactions for settled spend.
+Declined card attempts come from authorization records, not transaction records. v1 includes declined authorizations in the feed, but excludes them from summary spend metrics; summary spend uses posted transactions for settled spend.
 
 Query: `cursor`, `limit` (default 10, max 50), optional `since` (timestamp for delta poll on the feed).
 
 Cursor pagination:
 
 - Initial page load requests `GET /card_activity?limit=10` and returns the 10 most recent activity items.
-- Response includes `next_cursor`, derived from the last item in the page, e.g. `{ displayAt, id }`.
+- Response includes `next_cursor`, derived from the last item in the page, e.g. `{ createdAt, id }`.
 - When the user scrolls, the frontend calls `GET /card_activity?limit=10&cursor=<next_cursor>` to fetch the next older page.
-- The backend queries activity ordered by `displayAt DESC, id DESC` and returns rows after the cursor boundary.
+- The backend queries activity ordered by `createdAt DESC, id DESC` and returns rows after the cursor boundary.
 - If `next_cursor` is `null`, there are no more older rows to load.
 
 I'm choosing cursor pagination here over offset/page-number pagination because new activity can arrive while the user is scrolling given spend nature. Offsets can shift when new rows are inserted, causing duplicate or skipped items.
@@ -292,7 +292,7 @@ Sample Dummy Response:
       "currency": "usd",
       "merchant_name": "Shell",
       "merchant_category": "gas_stations",
-      "display_at": "2026-05-21T14:32:00Z"
+      "created_at": "2026-05-21T14:32:00Z"
     }
   ],
   "next_cursor": "...",
